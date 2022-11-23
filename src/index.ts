@@ -14,7 +14,6 @@ app.get('/', (req: Request, res: Response) => {
 })
 
 app.use('/products', productsRouter)
-
 app.use('/users', usersRouter)
 
 app.listen(port, () => {
