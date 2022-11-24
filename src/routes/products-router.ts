@@ -1,5 +1,6 @@
 import {Request, Response, Router} from 'express';
 import {productsRepository} from '../repositories/products-repository';
+import {inputValidatorResult, titleValidator} from "../middleware/input-validation";
 
 export const productsRouter = Router({})
 
@@ -8,10 +9,13 @@ productsRouter.get('/', (req: Request, res: Response) => {
     res.send(products)
 })
 
-productsRouter.post('/', (req: Request, res: Response) => {
-    const newProduct = productsRepository.createProduct(req.body.title)
-    res.status(201).send(newProduct)
-})
+productsRouter.post('/',
+    titleValidator,
+    inputValidatorResult,
+    (req: Request, res: Response) => {
+        const newProduct = productsRepository.createProduct(req.body.title)
+        res.status(201).send(newProduct)
+    })
 
 productsRouter.get('/:id', (req: Request, res: Response) => {
     const product = productsRepository.findProductById(+req.params.id)
@@ -20,12 +24,15 @@ productsRouter.get('/:id', (req: Request, res: Response) => {
         : res.send(404)
 })
 
-productsRouter.put('/:id', (req: Request, res: Response) => {
-    const id = +req.params.id
-    productsRepository.updateProduct(id, req.body.title)
-        ? res.send(productsRepository.findProductById(id))
-        : res.send(404)
-})
+productsRouter.put('/:id',
+    titleValidator,
+    inputValidatorResult,
+    (req: Request, res: Response) => {
+        const id = +req.params.id
+        productsRepository.updateProduct(id, req.body.title)
+            ? res.send(productsRepository.findProductById(id))
+            : res.send(404)
+    })
 
 productsRouter.delete('/:id', (req: Request, res: Response) => {
     productsRepository.removeProduct(+req.params.id)
