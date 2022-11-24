@@ -4,21 +4,21 @@ import {inputValidatorResult, titleValidator} from "../middleware/input-validati
 
 export const productsRouter = Router({})
 
-productsRouter.get('/', (req: Request, res: Response) => {
-    const products = productsRepository.findProducts(req.query.title?.toString())
+productsRouter.get('/', async (req: Request, res: Response) => {
+    const products = await productsRepository.findProducts(req.query.title?.toString())
     res.send(products)
 })
 
 productsRouter.post('/',
     titleValidator,
     inputValidatorResult,
-    (req: Request, res: Response) => {
-        const newProduct = productsRepository.createProduct(req.body.title)
+    async (req: Request, res: Response) => {
+        const newProduct = await productsRepository.createProduct(req.body.title)
         res.status(201).send(newProduct)
     })
 
-productsRouter.get('/:id', (req: Request, res: Response) => {
-    const product = productsRepository.findProductById(+req.params.id)
+productsRouter.get('/:id', async (req: Request, res: Response) => {
+    const product = await productsRepository.findProductById(+req.params.id)
     product
         ? res.send(product)
         : res.send(404)
@@ -27,15 +27,15 @@ productsRouter.get('/:id', (req: Request, res: Response) => {
 productsRouter.put('/:id',
     titleValidator,
     inputValidatorResult,
-    (req: Request, res: Response) => {
+    async (req: Request, res: Response) => {
         const id = +req.params.id
-        productsRepository.updateProduct(id, req.body.title)
+        await productsRepository.updateProduct(id, req.body.title)
             ? res.send(productsRepository.findProductById(id))
             : res.send(404)
     })
 
-productsRouter.delete('/:id', (req: Request, res: Response) => {
-    productsRepository.removeProduct(+req.params.id)
+productsRouter.delete('/:id', async (req: Request, res: Response) => {
+    await productsRepository.removeProduct(+req.params.id)
         ? res.send(204)
         : res.send(404)
 })
